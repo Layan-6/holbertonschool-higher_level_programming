@@ -1,0 +1,8 @@
+Test 1: Check inheritance from list
+Test 2: Check __str__ method works
+Test 3: Check append() method works
+Test 4: Check print_sorted() with sorted append
+Test 5: Check print_sorted() with unsorted append
+Test 6: Check print_sorted() with negative numbers
+Test 7: Check print_sorted() with empty list
+Test 8: Check print_sorted() returns new list (doesn't modify original)
