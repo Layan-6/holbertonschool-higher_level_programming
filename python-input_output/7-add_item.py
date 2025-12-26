@@ -16,7 +16,7 @@ def main():
     Main function to add arguments to list and save to file
     """
     filename = "add_item.json"
-    
+
     # Load existing list or create new one
     if os.path.exists(filename):
         try:
@@ -25,10 +25,10 @@ def main():
             items = []
     else:
         items = []
-    
+
     # Add command line arguments (excluding script name)
     items.extend(sys.argv[1:])
-    
+
     # Save the updated list
     save_to_json_file(items, filename)
 
