@@ -18,11 +18,11 @@ def class_to_json(obj):
     """
     # Get all attributes of the object
     obj_dict = obj.__dict__
-    
+
     # Filter only serializable types
     result = {}
     for key, value in obj_dict.items():
         if isinstance(value, (list, dict, str, int, bool)):
             result[key] = value
-    
+
     return result
