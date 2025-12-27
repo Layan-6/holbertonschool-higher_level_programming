@@ -1,22 +1,34 @@
-#!/usr/bin/python3
-"""
-Module: task_00_basic_serialization
-Basic serialization module for JSON operations
-"""
+import pickle
 import json
 
+# For pickle serialization
+def save_data(data, filename):
+    """Save data using pickle serialization"""
+    try:
+        with open(filename, 'wb') as f:  # 'wb' for binary writing
+            pickle.dump(data, f)
+        return True
+    except Exception as e:
+        print(f"Error saving data: {e}")
+        return False
 
-def serialize_and_save_to_file(data, filename):
-    """
-    Serializes a Python dictionary to JSON and saves it to a file
+def load_data(filename):
+    """Load data using pickle deserialization"""
+    try:
+        with open(filename, 'rb') as f:  # 'rb' for binary reading
+            data = pickle.load(f)
+        return data
+    except Exception as e:
+        print(f"Error loading data: {e}")
+        return None
 
-    Args:
-        data (dict): Python Dictionary with data
-        filename (str): The filename of the output JSON file
-    """
-    with open(filename, 'w', encoding='utf-8') as file:
-        json.dump(data, file)
-
-
-def load_and_deserialize(filename):
-   
+# For JSON serialization (for simpler data types)
+def save_json(data, filename):
+    """Save data using JSON serialization"""
+    try:
+        with open(filename, 'w', encoding='utf-8') as f:  # 'w' for text writing
+            json.dump(data, f, indent=4)
+        return True
+    except Exception as e:
+        print(f"Error saving JSON: {e}")
+        return False 
