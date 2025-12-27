@@ -1,34 +1,47 @@
-import pickle
+#!/usr/bin/env python3
+"""
+0. Basic Serialization
+"""
+
 import json
 
-# For pickle serialization
-def save_data(data, filename):
-    """Save data using pickle serialization"""
-    try:
-        with open(filename, 'wb') as f:  # 'wb' for binary writing
-            pickle.dump(data, f)
-        return True
-    except Exception as e:
-        print(f"Error saving data: {e}")
-        return False
+def serialize_and_save_to_file(data, filename):
+    """
+    Serializes a Python dictionary to a JSON file.
+    
+    Args:
+        data: Python dictionary to serialize
+        filename: Name of the output JSON file
+    """
+    with open(filename, 'w', encoding='utf-8') as f:
+        json.dump(data, f)
 
-def load_data(filename):
-    """Load data using pickle deserialization"""
-    try:
-        with open(filename, 'rb') as f:  # 'rb' for binary reading
-            data = pickle.load(f)
-        return data
-    except Exception as e:
-        print(f"Error loading data: {e}")
-        return None
+def load_and_deserialize(filename):
+    """
+    Loads and deserializes JSON data from a file.
+    
+    Args:
+        filename: Name of the JSON file to read
+        
+    Returns:
+        Python dictionary with the deserialized data
+    """
+    with open(filename, 'r', encoding='utf-8') as f:
+        return json.load(f)
 
-# For JSON serialization (for simpler data types)
-def save_json(data, filename):
-    """Save data using JSON serialization"""
-    try:
-        with open(filename, 'w', encoding='utf-8') as f:  # 'w' for text writing
-            json.dump(data, f, indent=4)
-        return True
-    except Exception as e:
-        print(f"Error saving JSON: {e}")
-        return False 
+# Example test code (might be required or might not)
+if __name__ == "__main__":
+    # Sample data
+    data_to_serialize = {
+        "name": "John",
+        "age": 30,
+        "city": "New York"
+    }
+    
+    # Serialize
+    serialize_and_save_to_file(data_to_serialize, "data.json")
+    print("Data serialized and saved to data.json")
+    
+    # Deserialize
+    deserialized_data = load_and_deserialize("data.json")
+    print("Deserialized Data:", deserialized_data)
