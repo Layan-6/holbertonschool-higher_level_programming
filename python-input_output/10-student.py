@@ -37,11 +37,13 @@ class Student:
         obj_dict = self.__dict__
 
         # If attrs is provided and is a list of strings
-        if isinstance(attrs, list) and all(isinstance(item, str) for item in attrs):
+        if isinstance(attrs, list) and all(isinstance(item, str)
+                                           for item in attrs):
             # Filter dictionary to include only specified attributes
             result = {}
             for key, value in obj_dict.items():
-                if key in attrs and isinstance(value, (list, dict, str, int, bool)):
+                if key in attrs and isinstance(value, (list, dict, str,
+                                                       int, bool)):
                     result[key] = value
             return result
         else:
