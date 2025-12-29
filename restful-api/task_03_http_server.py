@@ -1,53 +1,44 @@
 #!/usr/bin/env python3
-"""
-3. Simple API with http.server
-"""
-
-from http.server import HTTPServer, BaseHTTPRequestHandler
+import http.server
 import json
 
-PORT = 8000
-
-class APIHandler(BaseHTTPRequestHandler):
-    
-    def _set_headers(self, content_type='text/plain', status=200):
-        self.send_response(status)
-        self.send_header('Content-type', content_type)
-        self.end_headers()
-    
+class Handler(http.server.BaseHTTPRequestHandler):
     def do_GET(self):
-        path = self.path
-        
-        if path == '/':
-            self._set_headers('text/plain', 200)
-            response = "Hello, this is a simple API"
-            self.wfile.write(response.encode('utf-8'))
-        
-        elif path == '/data':
-            self._set_headers('application/json', 200)
-            data = {"name": "John", "age": 30, "city": "New York"}
-            self.wfile.write(json.dumps(data).encode('utf-8'))
-        
-        elif path == '/status':
-            self._set_headers('text/plain', 200)
-            self.wfile.write(b"OK")
-        
-        elif path == '/info':
-            self._set_headers('application/json', 200)
-            info = {"version": "1.0", "description": "A simple API built with http.server"}
-            self.wfile.write(json.dumps(info).encode('utf-8'))
-        
+        if self.path == '/':
+            self.send_response(200)
+            self.send_header('Content-type', 'text/plain')
+            self.end_headers()
+            # جرب كتابة البايتات مباشرة
+            response = b'Hello, this is a simple API'
+            self.wfile.write(response)
+        elif self.path == '/data':
+            self.send_response(200)
+            self.send_header('Content-type', 'application/json')
+            self.end_headers()
+            self.wfile.write(json.dumps({
+                "name": "John",
+                "age": 30,
+                "city": "New York"
+            }).encode())
+        elif self.path == '/status':
+            self.send_response(200)
+            self.send_header('Content-type', 'text/plain')
+            self.end_headers()
+            self.wfile.write(b'OK')
+        elif self.path == '/info':
+            self.send_response(200)
+            self.send_header('Content-type', 'application/json')
+            self.end_headers()
+            self.wfile.write(json.dumps({
+                "version": "1.0",
+                "description": "A simple API built with http.server"
+            }).encode())
         else:
-            self._set_headers('text/plain', 404)
-            self.wfile.write(b"Endpoint not found")
-    
-    def log_message(self, format, *args):
-        pass
-
-def main():
-    server = HTTPServer(('', PORT), APIHandler)
-    print(f"Server running on port {PORT}")
-    server.serve_forever()
+            self.send_response(404)
+            self.send_header('Content-type', 'text/plain')
+            self.end_headers()
+            self.wfile.write(b'Endpoint not found')
 
 if __name__ == '__main__':
-    main()
+    server = http.server.HTTPServer(('', 8000), Handler)
+    server.serve_forever()
