@@ -1,10 +1,10 @@
 #!/usr/bin/python3
-"""
-Test for add_integer function
-"""
+""" Test for add_integer function """
+
 import sys
 import os
 sys.path.insert(0, os.path.abspath('.'))
+
 add_integer = __import__('0-add_integer').add_integer
 
 >>> add_integer(1, 2)
@@ -23,3 +23,7 @@ TypeError: b must be an integer
 Traceback (most recent call last):
     ...
 TypeError: a must be an integer
+>>> add_integer(1.5, 2.5)
+3
+>>> add_integer(-1.5, -2.5)
+-3
