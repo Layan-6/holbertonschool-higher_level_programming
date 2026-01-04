@@ -1,0 +1,38 @@
+>>> text_indentation = __import__('5-text_indentation').text_indentation
+>>> text_indentation("Hello. How are you? Good: I hope")
+Hello.
+
+How are you?
+
+Good:
+
+I hope
+>>> text_indentation("")
+(no output)
+>>> text_indentation("Hello.   How are you?")
+Hello.
+
+How are you?
+>>> text_indentation("This is a test. With colon: and question? End")
+This is a test.
+
+With colon:
+
+and question?
+
+End
+>>> text_indentation("No delimiters here")
+No delimiters here
+>>> text_indentation("...")
+.
+
+
+.
+
+.
+>>> text_indentation("   ")
+(no output)
+>>> text_indentation(123)
+Traceback (most recent call last):
+...
+TypeError: text must be a string
