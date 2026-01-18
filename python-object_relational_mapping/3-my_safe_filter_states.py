@@ -13,7 +13,7 @@ if __name__ == "__main__":
     password = sys.argv[2]
     database = sys.argv[3]
     state_name = sys.argv[4]
-    
+
     # Connect to MySQL database
     db = MySQLdb.connect(
         host="localhost",
@@ -22,21 +22,22 @@ if __name__ == "__main__":
         passwd=password,
         db=database
     )
-    
+
     # Create a cursor object
     cursor = db.cursor()
-    
-    # Execute SQL query with parameterized input to prevent SQL injection
-    # Using %s as placeholder and passing state_name as a parameter
-    cursor.execute("SELECT * FROM states WHERE name = %s ORDER BY id ASC", (state_name,))
-    
+
+    # Execute SQL query with parameterized input
+    # to prevent SQL injection
+    cursor.execute("SELECT * FROM states WHERE name = %s ORDER BY id ASC",
+                   (state_name,))
+
     # Fetch all rows
     states = cursor.fetchall()
-    
+
     # Print each state
     for state in states:
         print(state)
-    
+
     # Close cursor and database connection
     cursor.close()
     db.close()
