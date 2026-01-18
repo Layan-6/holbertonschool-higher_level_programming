@@ -14,12 +14,6 @@ if __name__ == "__main__":
     database = sys.argv[3]
     state_name = sys.argv[4]
 
-    # Remove extra quotes if present
-    # This handles cases like '''Arizona''' or '"Arizona"'
-    if (state_name.startswith("'") and state_name.endswith("'")) or \
-       (state_name.startswith('"') and state_name.endswith('"')):
-        state_name = state_name[1:-1]
-
     # Connect to MySQL database
     db = MySQLdb.connect(
         host="localhost",
@@ -47,13 +41,10 @@ if __name__ == "__main__":
     cities = cursor.fetchall()
 
     # Extract city names and join them with comma
-    city_names = []
-    for city in cities:
-        city_names.append(str(city[0]))
-    
+    city_names = [city[0] for city in cities]
     result = ", ".join(city_names)
 
-    # Print result
+    # Print result (will print empty string if no cities)
     print(result)
 
     # Close cursor and database connection
