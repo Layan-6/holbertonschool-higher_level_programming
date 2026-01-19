@@ -14,26 +14,30 @@ if __name__ == "__main__":
     mysql_username = sys.argv[1]
     mysql_password = sys.argv[2]
     database_name = sys.argv[3]
-    
+
     # Create engine and connect to database
     engine = create_engine(
-        f'mysql+mysqldb://{mysql_username}:{mysql_password}@localhost:3306/{database_name}',
+        'mysql+mysqldb://{}:{}@localhost:3306/{}'.format(
+            mysql_username, mysql_password, database_name
+        ),
         pool_pre_ping=True
     )
-    
+
     # Create session
     Session = sessionmaker(bind=engine)
     session = Session()
-    
+
     # Query for states with 'a' in their name
-    states_to_delete = session.query(State).filter(State.name.like('%a%')).all()
-    
+    states_to_delete = session.query(State).filter(
+        State.name.like('%a%')
+    ).all()
+
     # Delete each state found
     for state in states_to_delete:
         session.delete(state)
-    
+
     # Commit the changes to the database
     session.commit()
-    
+
     # Close the session
     session.close()
