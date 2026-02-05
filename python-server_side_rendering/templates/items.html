@@ -1,0 +1,72 @@
+{% include 'header.html' %}
+
+<h1>Items List</h1>
+
+{% if items %}
+    <p>Here are the available items:</p>
+    <ul>
+        {% for item in items %}
+            <li>{{ item }}</li>
+        {% endfor %}
+    </ul>
+    
+    <div class="stats">
+        <p><strong>Total items:</strong> {{ items|length }}</p>
+        <p><strong>First item:</strong> {{ items[0] if items else 'N/A' }}</p>
+        <p><strong>Last item:</strong> {{ items[-1] if items else 'N/A' }}</p>
+    </div>
+    
+    <style>
+        .stats {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 1rem;
+            margin-top: 2rem;
+        }
+        
+        .stats p {
+            margin: 0.5rem 0;
+        }
+    </style>
+{% else %}
+    <div class="empty-message">
+        <p>⚠️ No items found</p>
+        <p>Please check if the JSON file contains items or if the file exists.</p>
+    </div>
+    
+    <style>
+        .empty-message {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 5px;
+            padding: 2rem;
+            text-align: center;
+            margin: 2rem 0;
+        }
+        
+        .empty-message p {
+            color: #856404;
+            font-size: 1.1rem;
+        }
+    </style>
+{% endif %}
+
+<div class="instructions">
+    <h2>How it works:</h2>
+    <ul>
+        <li>Items are loaded from <code>items.json</code> file</li>
+        <li>Jinja2 loops through each item using <code>{% raw %}{% for %}{% endraw %}</code></li>
+        <li>Conditional statement checks if list is empty</li>
+        <li>Template dynamically adjusts based on data</li>
+    </ul>
+    
+    <h3>Test different scenarios:</h3>
+    <ol>
+        <li>With items in JSON file (current state)</li>
+        <li>With empty list in JSON: <code>{"items": []}</code></li>
+        <li>Without JSON file or invalid JSON</li>
+    </ol>
+</div>
+
+{% include 'footer.html' %}
