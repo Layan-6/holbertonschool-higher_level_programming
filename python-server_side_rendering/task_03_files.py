@@ -18,11 +18,18 @@ def read_json_products():
     
     try:
         with open(json_file, 'r') as f:
-            # Handle both formats: list of objects or single object with products key
             data = json.load(f)
             
-            if isinstance(data, dict) and 'products' in data:
-                return data['products']
+            # Handle different JSON structures
+            if isinstance(data, dict):
+                # Check for 'products' key
+                if 'products' in data:
+                    return data['products']
+                # If no 'products' key but has array-like structure
+                elif any(key.isdigit() for key in data.keys()):
+                    return list(data.values())
+                else:
+                    return []
             elif isinstance(data, list):
                 return data
             else:
@@ -43,22 +50,27 @@ def read_csv_products():
         with open(csv_file, 'r') as f:
             reader = csv.DictReader(f)
             for row in reader:
-                # Convert id to int and price to float if possible
-                row_copy = {}
+                # Clean up the data
+                cleaned_row = {}
                 for key, value in row.items():
-                    key = key.strip()
-                    value = value.strip() if isinstance(value, str) else value
+                    # Clean key and value
+                    key_clean = key.strip().lower()
+                    value_clean = value.strip() if isinstance(value, str) else value
                     
-                    if key == 'id' and value.isdigit():
-                        row_copy[key] = int(value)
-                    elif key == 'price':
+                    # Type conversion
+                    if key_clean == 'id' and value_clean.isdigit():
+                        cleaned_row[key_clean] = int(value_clean)
+                    elif key_clean == 'price':
                         try:
-                            row_copy[key] = float(value)
+                            # Remove $ sign if present
+                            if isinstance(value_clean, str):
+                                value_clean = value_clean.replace('$', '').replace(',', '')
+                            cleaned_row[key_clean] = float(value_clean)
                         except ValueError:
-                            row_copy[key] = value
+                            cleaned_row[key_clean] = value_clean
                     else:
-                        row_copy[key] = value
-                products.append(row_copy)
+                        cleaned_row[key_clean] = value_clean
+                products.append(cleaned_row)
     except Exception as e:
         print(f"Error reading CSV: {e}")
     
@@ -66,10 +78,15 @@ def read_csv_products():
 
 def filter_product_by_id(products, product_id):
     """Filter products by ID"""
+    if not product_id:
+        return None
+    
     for product in products:
         # Try to match id as string or integer
-        if str(product.get('id', '')) == str(product_id):
-            return product
+        prod_id = product.get('id')
+        if prod_id is not None:
+            if str(prod_id) == str(product_id):
+                return product
     return None
 
 @app.route('/')
@@ -89,15 +106,23 @@ def products():
     error_message = None
     filtered_product = None
     
+    # Check for invalid source
+    if source not in ['json', 'csv']:
+        error_message = f"Wrong source"
+        return render_template('product_display.html', 
+                             error_message=error_message,
+                             source=source)
+    
     # Read data based on source
     if source == 'json':
         products_list = read_json_products()
     elif source == 'csv':
         products_list = read_csv_products()
-    else:
-        # Invalid source
-        error_message = f"Wrong source '{source}'. Please use 'json' or 'csv'."
-        return render_template('product_display.html', 
+    
+    # Check if data was loaded
+    if not products_list:
+        error_message = "No data available"
+        return render_template('product_display.html',
                              error_message=error_message,
                              source=source)
     
@@ -105,15 +130,11 @@ def products():
     if product_id:
         filtered_product = filter_product_by_id(products_list, product_id)
         if not filtered_product:
-            error_message = f"Product with ID '{product_id}' not found."
+            error_message = "Product not found"
             return render_template('product_display.html',
                                  error_message=error_message,
                                  source=source,
                                  product_id=product_id)
-    
-    # If no products found (empty file)
-    if not products_list and not error_message:
-        error_message = f"No products found in {source.upper()} file."
     
     # Render template with data
     return render_template('product_display.html',
@@ -132,12 +153,6 @@ def about():
 def contact():
     """Render the contact page"""
     return render_template('contact.html')
-
-@app.route('/items')
-def items():
-    """Render the items page"""
-    # You can keep this or adapt it
-    return "Items page - See task_02_logic.py for implementation"
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
