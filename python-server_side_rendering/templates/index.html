@@ -1,36 +1,36 @@
 {% include 'header.html' %}
 
 <h1>Welcome to My Flask App</h1>
-<p>This is a simple Flask application demonstrating the power of server-side rendering with Jinja2 templates.</p>
+<p>This is a Flask application demonstrating server-side rendering with Jinja2 templates.</p>
 
-<h2>Features of this application:</h2>
+<h2>Features:</h2>
 <ul>
     <li>Flask web framework</li>
     <li>HTML templates with Jinja2</li>
-    <li>Template inheritance and includes</li>
-    <li>Reusable components</li>
     <li>Dynamic content with loops and conditions</li>
-    <li>JSON data integration</li>
+    <li>JSON and CSV data integration</li>
+    <li>Query parameter handling</li>
+    <li>Error handling for edge cases</li>
 </ul>
 
-<h2>Pages:</h2>
+<h2>Available Pages:</h2>
 <ul>
     <li><a href="/">Home</a> - This page</li>
     <li><a href="/about">About</a> - Information about the app</li>
     <li><a href="/contact">Contact</a> - Contact information</li>
-    <li><a href="/items">Items</a> - Dynamic items from JSON (NEW!)</li>
+    <li><a href="/items">Items</a> - Dynamic items from JSON</li>
+    <li><a href="/products?source=json">Products (JSON)</a> - Products from JSON file</li>
+    <li><a href="/products?source=csv">Products (CSV)</a> - Products from CSV file</li>
 </ul>
 
-<h2>Technologies Used:</h2>
-<ul>
-    <li>Python 3.x</li>
-    <li>Flask framework</li>
-    <li>HTML5</li>
-    <li>CSS3</li>
-    <li>Jinja2 templating engine</li>
-    <li>JSON for data storage</li>
-</ul>
-
-<p>Visit the <a href="/items">Items page</a> to see dynamic content with loops and conditions!</p>
+<h2>Test Different Scenarios:</h2>
+<ol>
+    <li><a href="/products?source=json">JSON all products</a></li>
+    <li><a href="/products?source=csv">CSV all products</a></li>
+    <li><a href="/products?source=json&id=3">JSON product ID 3</a></li>
+    <li><a href="/products?source=csv&id=5">CSV product ID 5</a></li>
+    <li><a href="/products?source=xml">Invalid source (error)</a></li>
+    <li><a href="/products?source=json&id=999">Non-existent ID (error)</a></li>
+</ol>
 
 {% include 'footer.html' %}

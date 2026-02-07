@@ -1,0 +1,294 @@
+{% include 'header.html' %}
+
+<div class="container">
+    <h1>Product Display</h1>
+    
+    <!-- Navigation and form for testing -->
+    <div class="navigation">
+        <h3>Test Different Scenarios:</h3>
+        <div class="test-links">
+            <a href="/products?source=json" class="btn">JSON All Products</a>
+            <a href="/products?source=csv" class="btn">CSV All Products</a>
+            <a href="/products?source=json&id=1" class="btn">JSON ID 1</a>
+            <a href="/products?source=csv&id=5" class="btn">CSV ID 5</a>
+            <a href="/products?source=xml" class="btn">Invalid Source</a>
+            <a href="/products?source=json&id=999" class="btn">Non-existent ID</a>
+        </div>
+        
+        <form class="search-form" action="/products" method="get">
+            <div class="form-group">
+                <label for="source">Source:</label>
+                <select id="source" name="source" required>
+                    <option value="">Select source</option>
+                    <option value="json" {% if source == 'json' %}selected{% endif %}>JSON</option>
+                    <option value="csv" {% if source == 'csv' %}selected{% endif %}>CSV</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="id">Product ID (optional):</label>
+                <input type="number" id="id" name="id" 
+                       placeholder="Enter product ID" 
+                       value="{{ product_id if product_id }}">
+            </div>
+            
+            <button type="submit" class="btn">Show Products</button>
+        </form>
+    </div>
+    
+    <!-- Error messages -->
+    {% if error_message %}
+        <div class="error-message">
+            <h3>⚠️ Error</h3>
+            <p>{{ error_message }}</p>
+            <p>Current parameters: source='{{ source }}' {% if product_id %}id={{ product_id }}{% endif %}</p>
+        </div>
+    {% endif %}
+    
+    <!-- Product display -->
+    {% if not error_message %}
+        <div class="info-panel">
+            <p><strong>Source:</strong> {{ source|upper }} file</p>
+            {% if product_id %}
+                <p><strong>Filter:</strong> Product ID = {{ product_id }}</p>
+            {% else %}
+                <p><strong>Showing:</strong> All products</p>
+            {% endif %}
+            <p><strong>Total products:</strong> {{ products|length if products else 0 }}</p>
+        </div>
+        
+        <!-- Single product view -->
+        {% if filtered_product %}
+            <div class="single-product">
+                <h2>Product Details</h2>
+                <div class="product-card">
+                    <h3>{{ filtered_product.name }}</h3>
+                    <table class="product-details">
+                        <tr>
+                            <th>ID</th>
+                            <td>{{ filtered_product.id }}</td>
+                        </tr>
+                        <tr>
+                            <th>Name</th>
+                            <td>{{ filtered_product.name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Category</th>
+                            <td>{{ filtered_product.category }}</td>
+                        </tr>
+                        <tr>
+                            <th>Price</th>
+                            <td>${{ "%.2f"|format(filtered_product.price|float) }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        
+        <!-- All products view -->
+        {% elif products %}
+            <h2>All Products</h2>
+            <div class="table-container">
+                <table class="products-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Category</th>
+                            <th>Price</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for product in products %}
+                        <tr>
+                            <td>{{ product.id }}</td>
+                            <td>{{ product.name }}</td>
+                            <td>{{ product.category }}</td>
+                            <td>${{ "%.2f"|format(product.price|float) }}</td>
+                            <td>
+                                <a href="/products?source={{ source }}&id={{ product.id }}" 
+                                   class="btn-small">View</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="summary">
+                <h3>Summary</h3>
+                <ul>
+                    <li>Total products: {{ products|length }}</li>
+                    <li>Categories: 
+                        {% set categories = [] %}
+                        {% for product in products %}
+                            {% if product.category not in categories %}
+                                {% set _ = categories.append(product.category) %}
+                            {% endif %}
+                        {% endfor %}
+                        {{ categories|join(', ') }}
+                    </li>
+                    <li>Price range: 
+                        ${{ "%.2f"|format(products|map(attribute='price')|map('float')|min) }} - 
+                        ${{ "%.2f"|format(products|map(attribute='price')|map('float')|max) }}
+                    </li>
+                </ul>
+            </div>
+        {% endif %}
+    {% endif %}
+</div>
+
+<style>
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+    
+    .navigation {
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 5px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .test-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .btn, .btn-small {
+        display: inline-block;
+        background-color: #007bff;
+        color: white;
+        padding: 0.5rem 1rem;
+        text-decoration: none;
+        border-radius: 4px;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+    
+    .btn-small {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.9rem;
+    }
+    
+    .btn:hover, .btn-small:hover {
+        background-color: #0056b3;
+    }
+    
+    .search-form {
+        display: flex;
+        gap: 1rem;
+        align-items: flex-end;
+        flex-wrap: wrap;
+    }
+    
+    .form-group {
+        flex: 1;
+        min-width: 200px;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: bold;
+    }
+    
+    .form-group select, .form-group input {
+        width: 100%;
+        padding: 0.5rem;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+    }
+    
+    .error-message {
+        background-color: #f8d7da;
+        border: 1px solid #f5c6cb;
+        border-radius: 5px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        color: #721c24;
+    }
+    
+    .info-panel {
+        background-color: #e7f3ff;
+        border: 1px solid #b3d7ff;
+        border-radius: 5px;
+        padding: 1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .product-card {
+        background-color: white;
+        border: 1px solid #dee2e6;
+        border-radius: 5px;
+        padding: 2rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        max-width: 500px;
+        margin: 0 auto;
+    }
+    
+    .product-details {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1rem;
+    }
+    
+    .product-details th {
+        text-align: left;
+        padding: 0.5rem;
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        width: 100px;
+    }
+    
+    .product-details td {
+        padding: 0.5rem;
+        border: 1px solid #dee2e6;
+    }
+    
+    .table-container {
+        overflow-x: auto;
+        margin-bottom: 2rem;
+    }
+    
+    .products-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 1rem;
+    }
+    
+    .products-table th {
+        background-color: #343a40;
+        color: white;
+        padding: 0.75rem;
+        text-align: left;
+    }
+    
+    .products-table td {
+        padding: 0.75rem;
+        border: 1px solid #dee2e6;
+    }
+    
+    .products-table tr:nth-child(even) {
+        background-color: #f8f9fa;
+    }
+    
+    .products-table tr:hover {
+        background-color: #e9ecef;
+    }
+    
+    .summary {
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 5px;
+        padding: 1.5rem;
+    }
+</style>
+
+{% include 'footer.html' %}
